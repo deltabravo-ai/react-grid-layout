@@ -311,10 +311,11 @@ var ReactGridLayout = /*#__PURE__*/function (_React$Component) {
       }
       var finalDroppingItem = _objectSpread(_objectSpread({}, droppingItem), onDragOverResult);
       var layout = _this.state.layout;
-      // This is relative to the DOM element that this event fired for.
-      var _e$nativeEvent = e.nativeEvent,
-        layerX = _e$nativeEvent.layerX,
-        layerY = _e$nativeEvent.layerY;
+      var gridRect = e.currentTarget.getBoundingClientRect(); // The grid's position in the viewport
+
+      // Calculate the mouse position relative to the grid
+      var layerX = e.clientX - gridRect.left;
+      var layerY = e.clientY - gridRect.top;
       var droppingPosition = {
         left: layerX / transformScale,
         top: layerY / transformScale,
