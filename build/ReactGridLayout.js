@@ -381,6 +381,7 @@ var ReactGridLayout = /*#__PURE__*/function (_React$Component) {
       // so we can increase and decrease count of dragEnter and
       // when it'll be equal to 0 we'll remove the placeholder
       if (_this.dragEnterCounter === 0) {
+        _this.props.onDragLeave(e);
         _this.removeDroppingPlaceholder();
       }
     });
@@ -388,6 +389,7 @@ var ReactGridLayout = /*#__PURE__*/function (_React$Component) {
       e.preventDefault(); // Prevent any browser native action
       e.stopPropagation();
       _this.dragEnterCounter++;
+      _this.props.onDragEnter(e);
     });
     _defineProperty(_assertThisInitialized(_this), "onDrop", function (e /*: Event*/) {
       e.preventDefault(); // Prevent any browser native action
@@ -676,5 +678,7 @@ _defineProperty(ReactGridLayout, "defaultProps", {
   onResize: _utils.noop,
   onResizeStop: _utils.noop,
   onDrop: _utils.noop,
-  onDropDragOver: _utils.noop
+  onDropDragOver: _utils.noop,
+  onDragEnter: _utils.noop,
+  onDragLeave: _utils.noop
 });

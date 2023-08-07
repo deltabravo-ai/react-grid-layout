@@ -115,7 +115,9 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     onResize: noop,
     onResizeStop: noop,
     onDrop: noop,
-    onDropDragOver: noop
+    onDropDragOver: noop,
+    onDragEnter: noop,
+    onDragLeave: noop,
   };
 
   state: State = {
@@ -742,6 +744,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     // so we can increase and decrease count of dragEnter and
     // when it'll be equal to 0 we'll remove the placeholder
     if (this.dragEnterCounter === 0) {
+      this.props.onDragLeave(e);
       this.removeDroppingPlaceholder();
     }
   };
@@ -750,6 +753,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     e.preventDefault(); // Prevent any browser native action
     e.stopPropagation();
     this.dragEnterCounter++;
+    this.props.onDragEnter(e);
   };
 
   onDrop: EventHandler = (e: Event) => {
