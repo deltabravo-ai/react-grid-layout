@@ -20,10 +20,12 @@ exports.clamp = clamp;
 };*/
 // Helper for generating column width
 function calcGridColWidth(positionParams /*: PositionParams*/) /*: number*/{
-  var margin = positionParams.margin,
-    containerPadding = positionParams.containerPadding,
-    containerWidth = positionParams.containerWidth,
-    cols = positionParams.cols;
+  const {
+    margin,
+    containerPadding,
+    containerWidth,
+    cols
+  } = positionParams;
   return (containerWidth - margin[0] * (cols - 1) - containerPadding[0] * 2) / cols;
 }
 
@@ -48,11 +50,13 @@ function calcGridItemWHPx(gridUnits /*: number*/, colOrRowSize /*: number*/, mar
  * @return {Position}                       Object containing coords.
  */
 function calcGridItemPosition(positionParams /*: PositionParams*/, x /*: number*/, y /*: number*/, w /*: number*/, h /*: number*/, state /*: ?Object*/) /*: Position*/{
-  var margin = positionParams.margin,
-    containerPadding = positionParams.containerPadding,
-    rowHeight = positionParams.rowHeight;
-  var colWidth = calcGridColWidth(positionParams);
-  var out = {};
+  const {
+    margin,
+    containerPadding,
+    rowHeight
+  } = positionParams;
+  const colWidth = calcGridColWidth(positionParams);
+  const out = {};
 
   // If resizing, use the exact width and height as returned from resizing callbacks.
   if (state && state.resizing) {
@@ -69,6 +73,9 @@ function calcGridItemPosition(positionParams /*: PositionParams*/, x /*: number*
   if (state && state.dragging) {
     out.top = Math.round(state.dragging.top);
     out.left = Math.round(state.dragging.left);
+  } else if (state && state.resizing && typeof state.resizing.top === "number" && typeof state.resizing.left === "number") {
+    out.top = Math.round(state.resizing.top);
+    out.left = Math.round(state.resizing.left);
   }
   // Otherwise, calculate from grid units.
   else {
@@ -88,11 +95,13 @@ function calcGridItemPosition(positionParams /*: PositionParams*/, x /*: number*
  * @return {Object}                         x and y in grid units.
  */
 function calcXY(positionParams /*: PositionParams*/, top /*: number*/, left /*: number*/, w /*: number*/, h /*: number*/) /*: { x: number, y: number }*/{
-  var margin = positionParams.margin,
-    cols = positionParams.cols,
-    rowHeight = positionParams.rowHeight,
-    maxRows = positionParams.maxRows;
-  var colWidth = calcGridColWidth(positionParams);
+  const {
+    margin,
+    cols,
+    rowHeight,
+    maxRows
+  } = positionParams;
+  const colWidth = calcGridColWidth(positionParams);
 
   // left = colWidth * x + margin * (x + 1)
   // l = cx + m(x+1)
@@ -101,15 +110,15 @@ function calcXY(positionParams /*: PositionParams*/, top /*: number*/, left /*: 
   // l - m = x(c + m)
   // (l - m) / (c + m) = x
   // x = (left - margin) / (coldWidth + margin)
-  var x = Math.round((left - margin[0]) / (colWidth + margin[0]));
-  var y = Math.round((top - margin[1]) / (rowHeight + margin[1]));
+  let x = Math.round((left - margin[0]) / (colWidth + margin[0]));
+  let y = Math.round((top - margin[1]) / (rowHeight + margin[1]));
 
   // Capping
   x = clamp(x, 0, cols - w);
   y = clamp(y, 0, maxRows - h);
   return {
-    x: x,
-    y: y
+    x,
+    y
   };
 }
 
@@ -120,27 +129,36 @@ function calcXY(positionParams /*: PositionParams*/, top /*: number*/, left /*: 
  * @param  {Number} width                   Width in pixels.
  * @param  {Number} x                       X coordinate in grid units.
  * @param  {Number} y                       Y coordinate in grid units.
+ * @param {String} handle Resize Handle.
  * @return {Object}                         w, h as grid units.
  */
-function calcWH(positionParams /*: PositionParams*/, width /*: number*/, height /*: number*/, x /*: number*/, y /*: number*/) /*: { w: number, h: number }*/{
-  var margin = positionParams.margin,
-    maxRows = positionParams.maxRows,
-    cols = positionParams.cols,
-    rowHeight = positionParams.rowHeight;
-  var colWidth = calcGridColWidth(positionParams);
+function calcWH(positionParams /*: PositionParams*/, width /*: number*/, height /*: number*/, x /*: number*/, y /*: number*/, handle /*: string*/) /*: { w: number, h: number }*/{
+  const {
+    margin,
+    maxRows,
+    cols,
+    rowHeight
+  } = positionParams;
+  const colWidth = calcGridColWidth(positionParams);
 
   // width = colWidth * w - (margin * (w - 1))
   // ...
   // w = (width + margin) / (colWidth + margin)
-  var w = Math.round((width + margin[0]) / (colWidth + margin[0]));
-  var h = Math.round((height + margin[1]) / (rowHeight + margin[1]));
+  let w = Math.round((width + margin[0]) / (colWidth + margin[0]));
+  let h = Math.round((height + margin[1]) / (rowHeight + margin[1]));
 
   // Capping
-  w = clamp(w, 0, cols - x);
-  h = clamp(h, 0, maxRows - y);
+  let _w = clamp(w, 0, cols - x);
+  let _h = clamp(h, 0, maxRows - y);
+  if (["sw", "w", "nw"].indexOf(handle) !== -1) {
+    _w = clamp(w, 0, cols);
+  }
+  if (["nw", "n", "ne"].indexOf(handle) !== -1) {
+    _h = clamp(h, 0, maxRows);
+  }
   return {
-    w: w,
-    h: h
+    w: _w,
+    h: _h
   };
 }
 

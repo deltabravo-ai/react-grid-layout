@@ -8,6 +8,20 @@ exports.getBreakpointFromWidth = getBreakpointFromWidth;
 exports.getColsFromBreakpoint = getColsFromBreakpoint;
 exports.sortBreakpoints = sortBreakpoints;
 var _utils = require("./utils");
+/*:: import type { CompactType, Layout } from "./utils";*/
+/*:: export type Breakpoint = string;*/
+/*:: export type DefaultBreakpoints = "lg" | "md" | "sm" | "xs" | "xxs";*/
+/*:: export type ResponsiveLayout<T: Breakpoint> = {
+  +[breakpoint: T]: Layout
+};*/
+// + indicates read-only
+/*:: export type Breakpoints<T: Breakpoint> = {
+  +[breakpoint: T]: number
+};*/
+/*:: export type OnLayoutChangeCallback = (
+  Layout,
+  { [key: Breakpoint]: Layout }
+) => void;*/
 /**
  * Given a width, find the highest breakpoint that matches is valid for it (width > breakpoint).
  *
@@ -16,10 +30,10 @@ var _utils = require("./utils");
  * @return {String}       Highest breakpoint that is less than width.
  */
 function getBreakpointFromWidth(breakpoints /*: Breakpoints<Breakpoint>*/, width /*: number*/) /*: Breakpoint*/{
-  var sorted = sortBreakpoints(breakpoints);
-  var matching = sorted[0];
-  for (var i = 1, len = sorted.length; i < len; i++) {
-    var breakpointName = sorted[i];
+  const sorted = sortBreakpoints(breakpoints);
+  let matching = sorted[0];
+  for (let i = 1, len = sorted.length; i < len; i++) {
+    const breakpointName = sorted[i];
     if (width > breakpoints[breakpointName]) matching = breakpointName;
   }
   return matching;
@@ -56,11 +70,11 @@ function findOrGenerateResponsiveLayout(layouts /*: ResponsiveLayout<Breakpoint>
   // If it already exists, just return it.
   if (layouts[breakpoint]) return (0, _utils.cloneLayout)(layouts[breakpoint]);
   // Find or generate the next layout
-  var layout = layouts[lastBreakpoint];
-  var breakpointsSorted = sortBreakpoints(breakpoints);
-  var breakpointsAbove = breakpointsSorted.slice(breakpointsSorted.indexOf(breakpoint));
-  for (var i = 0, len = breakpointsAbove.length; i < len; i++) {
-    var b = breakpointsAbove[i];
+  let layout = layouts[lastBreakpoint];
+  const breakpointsSorted = sortBreakpoints(breakpoints);
+  const breakpointsAbove = breakpointsSorted.slice(breakpointsSorted.indexOf(breakpoint));
+  for (let i = 0, len = breakpointsAbove.length; i < len; i++) {
+    const b = breakpointsAbove[i];
     if (layouts[b]) {
       layout = layouts[b];
       break;
@@ -80,7 +94,7 @@ function findOrGenerateResponsiveLayout(layouts /*: ResponsiveLayout<Breakpoint>
  * @return {Array}              Sorted breakpoints.
  */
 function sortBreakpoints(breakpoints /*: Breakpoints<Breakpoint>*/) /*: Array<Breakpoint>*/{
-  var keys /*: Array<string>*/ = Object.keys(breakpoints);
+  const keys /*: Array<string>*/ = Object.keys(breakpoints);
   return keys.sort(function (a, b) {
     return breakpoints[a] - breakpoints[b];
   });
