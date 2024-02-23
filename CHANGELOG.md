@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.4.4 (Nov 28, 2023)
+
+### Bugfixes
+
+- Fix position logic when draggable item is dragged into the grid. We no longer use the deprecated / non-standard `e.nativeEvent.layer{X,Y}` properties. [#1915](https://github.com/react-grid-layout/react-grid-layout/pull/1915)
+- Fix drag values according to containerPadding. Previously, when dragging an item, the intuited position within the grid was *not* modified by `containerPadding`, causing it to off by that value. On most grids, this is only set to `[10, 10]`, so this may not have been noticeable, but for higher values it was very obvious. Thanks @hywlss9. [#1323](https://github.com/react-grid-layout/react-grid-layout/pull/1323)
+- Various lint/dependency fixes.
+
+## 1.4.3 (Nov 8, 2023)
+
+### Bugfixes
+
+- Set `activeDrag` in `onDragStart`. Fixes issues where, if no drag is performed, the `onDragStop` handler would error out and the drag would freeze. [#1923](https://github.com/react-grid-layout/react-grid-layout/pull/1923)
+  - THis fixes some broader issues with React 18 but testing library support is still not complete.
+
+## 1.4.2 (Sep 22, 2023)
+
+### Bugfixes
+
+- Resizing in every directionnow obeys preventCollision restrictions [#1937](https://github.com/react-grid-layout/react-grid-layout/pull/1937)
+
+## 1.4.1 (Sep 12, 2023)
+
+### Bugfixes
+
+- Fixed bug where height/width could not be resized if `h = 0` or `w = 0` and 0 `containerPadding`. [#1931](https://github.com/react-grid-layout/react-grid-layout/pull/1931)
+- Revert `fast-equals` to @4. Fixes incompatibility with `Create-React-App@5`.
+
 ## 1.4.0 (Sep 11, 2023)
 
 Hey, it's been a long time! Taking a year and a half off is a pretty "open-source" thing to do, thanks for bearing with me.

@@ -58,6 +58,7 @@ RGL is React-only and does not require jQuery.
 1. [Scaled Containers](https://react-grid-layout.github.io/react-grid-layout/examples/18-scale.html)
 1. [Allow Overlap](https://react-grid-layout.github.io/react-grid-layout/examples/19-allow-overlap.html)
 1. [All Resizable Handles](https://react-grid-layout.github.io/react-grid-layout/examples/20-resizable-handles.html)
+1. [Single Row Horizontal](https://react-grid-layout.github.io/react-grid-layout/examples/21-horizontal.html)
 
 #### Projects Using React-Grid-Layout
 
@@ -78,6 +79,7 @@ RGL is React-only and does not require jQuery.
 - [Ubidots](https://help.ubidots.com/en/articles/2400308-create-dashboards-and-widgets)
 - [Statsout](https://statsout.com/)
 - [Datto RMM](https://www.datto.com/uk/products/rmm/)
+- [SquaredUp](https://squaredup.com/)
 
 _Know of others? Create a PR to let me know!_
 
@@ -108,7 +110,7 @@ _Know of others? Create a PR to let me know!_
 
 ## Installation
 
-Install the React-Grid-Layout [package](https://www.npmjs.org/package/react-grid-layout) package using [npm](https://www.npmjs.com/):
+Install the React-Grid-Layout [package](https://www.npmjs.org/package/react-grid-layout) using [npm](https://www.npmjs.com/):
 
 ```bash
 npm install react-grid-layout
@@ -297,7 +299,7 @@ draggableCancel: ?string = '',
 draggableHandle: ?string = '',
 
 // Compaction type.
-compactType: ?('vertical' | 'horizontal') = 'vertical';
+compactType: ?('vertical' | 'horizontal' | null) = 'vertical';
 
 // Layout is an array of object with the format:
 // {x: number, y: number, w: number, h: number}

@@ -254,9 +254,20 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     const l = getLayoutItem(layout, i);
     if (!l) return;
 
+    // Create placeholder (display only)
+    const placeholder = {
+      w: l.w,
+      h: l.h,
+      x: l.x,
+      y: l.y,
+      placeholder: true,
+      i: i
+    };
+
     this.setState({
       oldDragItem: cloneLayoutItem(l),
-      oldLayout: layout
+      oldLayout: layout,
+      activeDrag: placeholder
     });
 
     return this.props.onDragStart(layout, l, l, null, e, node);
@@ -404,33 +415,59 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     { e, node, size, handle }
   ) => {
     const { oldResizeItem } = this.state;
-    let { layout } = this.state;
+    const { layout } = this.state;
     const { cols, preventCollision, allowOverlap } = this.props;
 
+    let shouldMoveItem = false;
+    let finalLayout;
+    let x;
+    let y;
+
     const [newLayout, l] = withLayoutItem(layout, i, l => {
+      let hasCollisions;
+      x = l.x;
+      y = l.y;
+      if (["sw", "w", "nw", "n", "ne"].indexOf(handle) !== -1) {
+        if (["sw", "nw", "w"].indexOf(handle) !== -1) {
+          x = l.x + (l.w - w);
+          w = l.x !== x && x < 0 ? l.w : w;
+          x = x < 0 ? 0 : x;
+        }
+
+        if (["ne", "n", "nw"].indexOf(handle) !== -1) {
+          y = l.y + (l.h - h);
+          h = l.y !== y && y < 0 ? l.h : h;
+          y = y < 0 ? 0 : y;
+        }
+
+        shouldMoveItem = true;
+      }
+
       // Something like quad tree should be used
       // to find collisions faster
-      let hasCollisions;
       if (preventCollision && !allowOverlap) {
-        const collisions = getAllCollisions(layout, { ...l, w, h }).filter(
-          layoutItem => layoutItem.i !== l.i
-        );
+        const collisions = getAllCollisions(layout, {
+          ...l,
+          w,
+          h,
+          x,
+          y
+        }).filter(layoutItem => layoutItem.i !== l.i);
         hasCollisions = collisions.length > 0;
 
         // If we're colliding, we need adjust the placeholder.
         if (hasCollisions) {
-          // adjust w && h to maximum allowed space
-          let leastX = Infinity,
-            leastY = Infinity;
-          collisions.forEach(layoutItem => {
-            if (layoutItem.x > l.x) leastX = Math.min(leastX, layoutItem.x);
-            if (layoutItem.y > l.y) leastY = Math.min(leastY, layoutItem.y);
-          });
-
-          if (Number.isFinite(leastX)) l.w = leastX - l.x;
-          if (Number.isFinite(leastY)) l.h = leastY - l.y;
+          // Reset layoutItem dimensions if there were collisions
+          y = l.y;
+          h = l.h;
+          x = l.x;
+          w = l.w;
+          shouldMoveItem = false;
         }
       }
+
+      l.w = w;
+      l.h = h;
 
       return l;
     });
@@ -438,24 +475,8 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     // Shouldn't ever happen, but typechecking makes it necessary
     if (!l) return;
 
-    let finalLayout;
-    if (["sw", "w", "nw", "n", "ne"].indexOf(handle) !== -1) {
-      let x = l.x;
-      let y = l.y;
-      if (["sw", "nw", "w"].indexOf(handle) !== -1) {
-        x = l.x + (l.w - w);
-        w = l.x !== x && x < 0 ? l.w : w;
-        x = x < 0 ? 0 : x;
-      }
-
-      if (["ne", "n", "nw"].indexOf(handle) !== -1) {
-        y = l.y + (l.h - h);
-        h = l.y !== y && y < 0 ? l.h : h;
-        y = y < 0 ? 0 : y;
-      }
-
-      l.w = w;
-      l.h = h;
+    finalLayout = newLayout;
+    if (shouldMoveItem) {
       // Move the element to the new position.
       const isUserAction = true;
       finalLayout = moveElement(
@@ -469,10 +490,6 @@ export default class ReactGridLayout extends React.Component<Props, State> {
         cols,
         allowOverlap
       );
-    } else {
-      l.w = w;
-      l.h = h;
-      finalLayout = newLayout;
     }
 
     // Create placeholder element (display only)
@@ -700,11 +717,20 @@ export default class ReactGridLayout extends React.Component<Props, State> {
 
     const { layout } = this.state;
 
+<<<<<<< HEAD
     const gridRect = e.currentTarget.getBoundingClientRect() // The grid's position in the viewport
 
     // Calculate the mouse position relative to the grid
     const layerX = e.clientX - gridRect.left 
     const layerY = e.clientY - gridRect.top 
+=======
+    // $FlowIgnore missing def
+    const gridRect = e.currentTarget.getBoundingClientRect(); // The grid's position in the viewport
+
+    // Calculate the mouse position relative to the grid
+    const layerX = e.clientX - gridRect.left;
+    const layerY = e.clientY - gridRect.top;
+>>>>>>> master
     const droppingPosition = {
       left: layerX / transformScale,
       top: layerY / transformScale,
